@@ -11,7 +11,7 @@ export const register = async (req, res) => {
         
         if (isUsed)
             return res.status(402).json({
-                message: `This user is already registered` 
+                message: 'This user is already registered' 
             })
         
         const salt = bcrypt.genSaltSync(10);
@@ -22,15 +22,25 @@ export const register = async (req, res) => {
             password: hash,
         })
 
+        const token = jwt.sign(
+            {
+                id: newUser._id,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '30d' },
+        )
+
         await newUser.save()
 
         res.json({
             newUser,
-            message: `Registration succes`,
+            message: 'Registration succes',
         })
 
     } catch (error) {
-        res.json({message:`Registration failed!`})
+        res.json({
+            message: 'Registration failed!'
+        })
     }
 }
 
